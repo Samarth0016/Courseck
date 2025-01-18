@@ -11,58 +11,71 @@ import {
     FormItem,
     FormMessage
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
-interface TitleFormProps{
-    initialData: {
-        title: string;
-    };
+import { Chapter } from "@prisma/client";
+import MyEditor from "@/components/editor";
+
+
+
+interface ChapterDescriptionFormProps{
+    initialData: Chapter;
     courseId: string;
+    chapterId: string;
 }
 
 const formSchema = z.object({
-    title: z.string().min(1,{
-        message: "Title is required",
-    })
-    
+    description: z.string().min(1),
 })
 
-const TitleForm =  ({
+const ChapterDescriptionForm =  ({
     initialData,
-    courseId
-}: TitleFormProps) => {
+    courseId,
+    chapterId,
+}: ChapterDescriptionFormProps) => {
 
     const [isEditing, setIsEditing] = useState(false);
     const toggleEdit = () => setIsEditing((current) =>!current);
 
     const router = useRouter();
 
+    const [savedContent, setSavedContent] = useState("");
+
+  const handleSave = (content: string) => {
+    console.log("Saved Content:", content);
+    setSavedContent(content);
+  };
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: initialData,
+        defaultValues:{
+            description: "",
+        },
     });
     
     const { isSubmitting, isValid } = form.formState;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        try{
-            //console.log("not patch");
-            await axios.patch('/api/courses/'+courseId, values);
-            toast.success("Course updated");
-            toggleEdit();
-            router.refresh();
-        } catch{
-            toast.error("something went wrong");
+        try {
+          //console.log("Submitting values:", values);
+          await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
+          toast.success("Chapter description");
+          toggleEdit();
+          router.refresh();
+        } catch (error) {
+          console.error("Error submitting form:", error);
+          toast.error("Something went wrong");
         }
-    }
+      };
+      
 
     return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        course title
+        Chapter Description
         <Button onClick={toggleEdit} variant="ghost">
             {isEditing ?(
                 <>Cancel</>
@@ -76,8 +89,12 @@ const TitleForm =  ({
         </Button>
       </div>
       {!isEditing && (
-        <p className="text-sm mt-2">
-            {initialData.title}
+        <p className={cn(
+            "text-sm mt-2",
+            !initialData.description && "text-slate-500 italic"
+
+        )}>
+            {initialData.description || "No description"}
         </p>
       ) }
       {isEditing && (
@@ -88,15 +105,13 @@ const TitleForm =  ({
             >
                 <FormField
                     control={form.control}
-                    name="title"
+                    name="description"
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input
-                                    disabled = {isSubmitting}
-                                    placeholder="e.g. 'Advanced web developement'"
-                                    {...field}
-                                />
+                            <MyEditor
+                                {...field}   
+                            />
                             </FormControl>
                             <FormMessage></FormMessage>
                         </FormItem>
@@ -117,4 +132,4 @@ const TitleForm =  ({
   )
 }
 
-export default TitleForm
+export default ChapterDescriptionForm

@@ -17,24 +17,24 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-interface TitleFormProps{
+interface ChapterTitleFormProps{
     initialData: {
         title: string;
     };
     courseId: string;
+    chapterId: string;
 }
 
 const formSchema = z.object({
-    title: z.string().min(1,{
-        message: "Title is required",
-    })
+    title: z.string().min(1),
     
-})
+});
 
-const TitleForm =  ({
+const ChapterTitleForm =  ({
     initialData,
-    courseId
-}: TitleFormProps) => {
+    courseId,
+    chapterId
+}: ChapterTitleFormProps) => {
 
     const [isEditing, setIsEditing] = useState(false);
     const toggleEdit = () => setIsEditing((current) =>!current);
@@ -50,8 +50,8 @@ const TitleForm =  ({
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try{
             //console.log("not patch");
-            await axios.patch('/api/courses/'+courseId, values);
-            toast.success("Course updated");
+            await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
+            toast.success("Chapter updated");
             toggleEdit();
             router.refresh();
         } catch{
@@ -62,7 +62,7 @@ const TitleForm =  ({
     return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        course title
+        Chapter title
         <Button onClick={toggleEdit} variant="ghost">
             {isEditing ?(
                 <>Cancel</>
@@ -94,7 +94,7 @@ const TitleForm =  ({
                             <FormControl>
                                 <Input
                                     disabled = {isSubmitting}
-                                    placeholder="e.g. 'Advanced web developement'"
+                                    placeholder="e.g. 'Introduction to the course'"
                                     {...field}
                                 />
                             </FormControl>
@@ -117,4 +117,4 @@ const TitleForm =  ({
   )
 }
 
-export default TitleForm
+export default ChapterTitleForm
