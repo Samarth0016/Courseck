@@ -54,7 +54,7 @@ const ImageForm =  ({
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
           console.log("Submitting values:", values);
-          await axios.patch('/api/courses/' + courseId, values);
+          await axios.patch('/api/courses/'+ courseId, values);
           toast.success("Image updated");
           toggleEdit();
           router.refresh();
@@ -99,6 +99,7 @@ const ImageForm =  ({
                     fill
                     className= "object-cover rounded-md"
                     src={ initialData.imageUrl }
+                    unoptimized
                 >
                 </Image>
             </div>

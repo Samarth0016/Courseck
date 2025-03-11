@@ -1,4 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
+import { error } from "console";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
@@ -14,7 +15,9 @@ const handelAuth = async () => {
 export const ourFileRouter = {
   courseImage: f({ image: {maxFileSize: "4MB", maxFileCount: 1}})
   .middleware(() => handelAuth())
-  .onUploadComplete(() => {}),
+  .onUploadComplete((file) => {
+    console.log("Upload completed for course image:", file);
+  }),
   
   courseAttachment: f(["text", "image", "video", "audio", "pdf"])
   .middleware(() => handelAuth())

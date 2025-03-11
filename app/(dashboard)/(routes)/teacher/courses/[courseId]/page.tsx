@@ -3,6 +3,7 @@ import React from 'react'
 import { db } from '@/lib/db'
 import { redirect } from 'next/navigation'
 import IconBadge from '@/components/icon-badge'
+import { Banner } from '@/components/banner'
 import { CircleDollarSign, File, LayoutDashboard, ListCheck, ListChecks } from 'lucide-react'
 import TitleForm from './_components/title-form'
 import DescriptionForm from './_components/description'
@@ -12,6 +13,8 @@ import CategoryForm from './_components/catagory-form'
 import PriceForm from './_components/price-form'
 import AttachmentForm from './_components/attachment-form'
 import ChapterForm from './_components/chapter-form'
+import { Actions } from './_components/action'
+
 const CourceIdPage = async ({
     params
 }:{
@@ -58,10 +61,10 @@ const CourceIdPage = async ({
     const requireFields = [
         course.title,
         course.description,
-        course.imageUrl,
+        //course.imageUrl,
         course.price,
         course.categoryId,
-        course.chapters.some(chapter => chapter.isPublic),
+        //course.chapters.some(chapter => chapter.isPublic),
     ];
 
     const totalFields = requireFields.length;
@@ -69,7 +72,15 @@ const CourceIdPage = async ({
 
     const completionText = '('+completedFields+'/'+totalFields+')'
     
+    const isComplete = requireFields.every(Boolean);
+
   return (
+    <>
+    {!course.isPublished && (
+        <Banner
+            label='This course is unpublished it will be not visible to students.'
+        ></Banner>
+    )}
     <div className='p-6'>
       <div className='flex items-center justify-between'>
         <div>
@@ -80,6 +91,11 @@ const CourceIdPage = async ({
                 complete all fields
             </span>
         </div>
+        <Actions
+            disabled= {!isComplete}
+            courseId= {params.courseId}
+            isPublic= {course.isPublished}
+        />
       </div>
       <div className='text-sm text-slate-700 flex items-center justify-between'>
             <span>
@@ -159,6 +175,7 @@ const CourceIdPage = async ({
             
         </div>
     </div>
+    </>
   )
 }
 

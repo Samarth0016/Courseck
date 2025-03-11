@@ -12,6 +12,8 @@ import ChapterDescriptionForm from './_components/chapter-description-form';
 import ChapterAccessForm from './_components/chapter-access-form';
 import ChapterVideo from './_components/chapter-video-form';
 import { Banner } from '@/components/banner';
+import { ChapterActions } from './_components/chapter-action';
+import YtVideoForm from './_components/yt-video-url';
 
 const ChapterIdPage = async ({
   params
@@ -41,10 +43,10 @@ const ChapterIdPage = async ({
     return redirect("/");
   }
 
+  //add videoUrl
   const requiredField = [
     chapter.title,
     chapter.description,
-    chapter.videoUrl,
   ];
 
   const totalFields = requiredField.length;
@@ -81,12 +83,12 @@ const ChapterIdPage = async ({
                 Complete all fields {complettionText}
               </span>
             </div>
-            {/* <ChapterActions
+            <ChapterActions
               disabled = {!isComplete}
               courseId = {params.courseId}
               chapterId = {params.chapterId}
               isPublic = {chapter.isPublic}
-            /> */}
+            />
           </div>
         </div>
       </div>
@@ -132,11 +134,19 @@ const ChapterIdPage = async ({
             Add a video
           </h2>
         </div>
-        <ChapterVideo
+        {/* <ChapterVideo
           initialData={chapter}
           chapterId= { chapterId }
           courseId= { courseId }
-        ></ChapterVideo>
+        ></ChapterVideo> */}
+        <YtVideoForm
+          initialData={{
+            ...chapter,
+            videoUrl: chapter.videoUrl ?? "Youtube video url", 
+          }}
+          chapterId= { chapterId }
+          courseId= { courseId }
+        />
         </div>
       </div>
     </div>

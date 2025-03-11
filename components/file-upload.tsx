@@ -22,7 +22,8 @@ export const FileUpload = ({
                 onChange(res?.[0].url);
             }}   
             onUploadError={(error: Error) =>{
-                toast.error(error?.message);
+                console.error("Upload error:", error);
+                toast.error(`${error?.message}`);
             }}
         >
         </UploadDropzone>
